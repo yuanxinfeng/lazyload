@@ -45,33 +45,47 @@
         </ul>
     </div>
     <script type="text/javascript">
+    /*
+	    懒加载的难点在于确定某张图片是否是用户需要的资源，在浏览器中，用户需要的是可视区内的资源，因此我们只需要判断图片是否已经呈现在可视区内，当图片呈现在可视区内时，获取图片的真实地址并赋给该图片即可(图片宽高需要指定，可以利用padding处理)。
+
+		判断是否存在于可视区
+
+		浏览器视口高度
+		待加载资源距离视口顶端位置
+		通过以上两点即可判断图片是否位于可视区内。
+    */
+    	//获取触发的 窗口
         var scrollElement = document.querySelector('.page'),
+        	//当前屏幕的高度
 		    viewH = document.documentElement.clientHeight;
-		 
+		//延迟加载的函数
 		function lazyload(){
-		  var nodes = document.querySelectorAll('img[data-src]');
-		 
-		  Array.prototype.forEach.call(nodes,function(item,index){
-		    var rect;
-		    if(item.dataset.src === '') return;
-		 
-		    rect = item.getBoundingClientRect();
-		 
-		    if(rect.bottom>=0 && rect.top < viewH){
-		        (function(item){
-		          var img = new Image();
-		          img.onload = function(){
-		            item.src = img.src;
-		          }
-		          img.src = item.dataset.src
-		          item.dataset.src = ''
-		        })(item)
-		    }
-		  })
+			//获取真实图片的属性
+		  	var nodes = document.querySelectorAll('img[data-src]');
+
+		  	Array.prototype.forEach.call(nodes,function(item,index){
+			    var rect;
+			    //如果真实图片为空 证明已经加载 无需向下执行
+			    if(item.dataset.src === '') return;
+			 	//获得当前dom的rect
+			    rect = item.getBoundingClientRect();
+			 	//判断是否已经出现在了视线中
+			    if(rect.bottom>=0 && rect.top < viewH){
+			        (function(item){
+				        var img = new Image();
+				        img.onload = function(){
+				            item.src = img.src;
+				        }
+				        //把真实地址赋给图片
+				        img.src = item.dataset.src
+				        item.dataset.src = ''
+			        })(item)
+			    }
+		  	})
 		}
 		 
 		lazyload();
-		 
+		
 		scrollElement.addEventListener('scroll',throttle(lazyload,500,1000));
 		 
 		function throttle(fun, delay, time) {
