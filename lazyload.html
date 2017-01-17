@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>图片(lazyload)</title>
+    <style type="text/css">
+		*{margin: 0; padding: 0}
+		li{list-style-type: none; padding-bottom: 50px;text-align:center;}
+		img{height: 160px}
+		html,body{ height: 100%}
+		.container,.page{position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+		.container{ overflow: hidden;}
+		.page{ overflow-y: auto; -webkit-overflow-scrolling: touch;}
+    </style>
+</head>
+<body>
+    <div class="page">
+        <ul>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+            <li><img src="loading.jpg" data-src="loading.gif"></li>
+        </ul>
+    </div>
+    <script type="text/javascript">
+        var scrollElement = document.querySelector('.page'),
+		    viewH = document.documentElement.clientHeight;
+		 
+		function lazyload(){
+		  var nodes = document.querySelectorAll('img[data-src]');
+		 
+		  Array.prototype.forEach.call(nodes,function(item,index){
+		    var rect;
+		    if(item.dataset.src === '') return;
+		 
+		    rect = item.getBoundingClientRect();
+		 
+		    if(rect.bottom>=0 && rect.top < viewH){
+		        (function(item){
+		          var img = new Image();
+		          img.onload = function(){
+		            item.src = img.src;
+		          }
+		          img.src = item.dataset.src
+		          item.dataset.src = ''
+		        })(item)
+		    }
+		  })
+		}
+		 
+		lazyload();
+		 
+		scrollElement.addEventListener('scroll',throttle(lazyload,500,1000));
+		 
+		function throttle(fun, delay, time) {
+		    var timeout,
+		        startTime = new Date();
+		    return function() {
+		        var context = this,
+		            args = arguments,
+		            curTime = new Date();
+		        clearTimeout(timeout);
+		        if (curTime - startTime >= time) {
+		            fun.apply(context, args);
+		            startTime = curTime;
+		        } else {
+		            timeout = setTimeout(fun, delay);
+		        }
+		    };
+		};
+    </script>
+</body>
+</html>
